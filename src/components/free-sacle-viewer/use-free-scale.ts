@@ -22,7 +22,7 @@ export const useFreeScale = ({
 }: IUseFreeScale) => {
   const [transXY, setTransXY] = useState<[number, number]>([0, 0]);
   const [scale, setScale] = useState(1);
-  const [rotate, setRotate] = useState(45);
+  const [rotate, setRotate] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const childRef = useRef<HTMLDivElement>(null);
