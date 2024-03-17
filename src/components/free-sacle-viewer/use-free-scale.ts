@@ -80,7 +80,6 @@ export const useFreeScale = ({
       requestAnimationRef.current = requestAnimationFrame(() => {
         setTransXY(customTransRes.transXY);
       });
-      // setTransXY(customTransRes.transXY);
     },
     [customTrans]
   );
