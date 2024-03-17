@@ -30,6 +30,8 @@ export const useFreeScale = ({
   const mousedownLock = useRef(false);
   const mouseXY = useRef<[number, number]>([0, 0]);
 
+  const requestAnimationRef = useRef<number | null>(null);
+
   const transformConfigRef = useRef<ITransRes>({
     transXY,
     scale,
@@ -72,7 +74,13 @@ export const useFreeScale = ({
         ...transformConfigRef.current,
         transXY: [transXY_[0] + deltaXY[0], transXY_[1] + deltaXY[1]],
       });
-      setTransXY(customTransRes.transXY);
+      if (requestAnimationRef.current) {
+        cancelAnimationFrame(requestAnimationRef.current);
+      }
+      requestAnimationRef.current = requestAnimationFrame(() => {
+        setTransXY(customTransRes.transXY);
+      });
+      // setTransXY(customTransRes.transXY);
     },
     [customTrans]
   );
@@ -124,9 +132,14 @@ export const useFreeScale = ({
           rotate: transformConfigRef.current.rotate,
         });
 
-        setScale(customTransRes.scale);
-        setTransXY(customTransRes.transXY);
-        setRotate(customTransRes.rotate);
+        if (requestAnimationRef.current) {
+          cancelAnimationFrame(requestAnimationRef.current);
+        }
+        requestAnimationRef.current = requestAnimationFrame(() => {
+          setScale(customTransRes.scale);
+          setTransXY(customTransRes.transXY);
+          setRotate(customTransRes.rotate);
+        });
       }
     },
     [customTrans, scaleStep]
@@ -145,8 +158,9 @@ export const useFreeScale = ({
 
   useEffect(() => {
     const child = childRef.current;
+    const container = containerRef.current;
 
-    if (child) {
+    if (child && container) {
       const handleMouseDown = (e: MouseEvent) => {
         mousedownLock.current = true;
         mouseXY.current = [e.clientX, e.clientY];
@@ -154,19 +168,34 @@ export const useFreeScale = ({
 
       const handleMouseUp = () => {
         mousedownLock.current = false;
+        if (requestAnimationRef.current) {
+          cancelAnimationFrame(requestAnimationRef.current);
+          requestAnimationRef.current = null;
+        }
       };
 
       child.addEventListener("mousedown", handleMouseDown);
       child.addEventListener("mouseup", handleMouseUp);
       child.addEventListener("mousemove", handleMove);
+      container.addEventListener("mouseup", handleMouseUp);
 
       return () => {
         child.removeEventListener("mousedown", handleMouseDown);
         child.removeEventListener("mouseup", handleMouseUp);
         child.removeEventListener("mousemove", handleMove);
+        container.removeEventListener("mouseup", handleMouseUp);
       };
     }
   }, [handleMove]);
+
+  useEffect(() => {
+    return () => {
+      const requestFrameId = requestAnimationRef.current;
+      if (requestFrameId) {
+        cancelAnimationFrame(requestFrameId);
+      }
+    };
+  }, []);
 
   const transform = useMemo(() => {
     return `translateX(${transXY[0]}px) translateY(${transXY[1]}px) rotate(${rotate}deg) scale(${scale})`;

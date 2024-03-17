@@ -1,4 +1,5 @@
 .container {
+  margin: 0 auto;
   position: relative;
   height: 500px;
   width: 500px;
@@ -12,6 +13,4 @@
   width: 150px;
   background-color: seagreen;
   transform-origin: center;
-
-  transition: all 0.1s;
 }
