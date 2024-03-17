@@ -27,6 +27,9 @@ export const useFreeScale = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const childRef = useRef<HTMLDivElement>(null);
 
+  const mousedownLock = useRef(false);
+  const mouseXY = useRef<[number, number]>([0, 0]);
+
   const transformConfigRef = useRef<ITransRes>({
     transXY,
     scale,
@@ -53,12 +56,36 @@ export const useFreeScale = ({
     }
   }, []);
 
+  const handleMove = useCallback(
+    (e: MouseEvent) => {
+      if (!mousedownLock.current) {
+        return;
+      }
+      e.preventDefault();
+      const transXY_ = transformConfigRef.current.transXY;
+      const deltaXY = [
+        e.clientX - mouseXY.current[0],
+        e.clientY - mouseXY.current[1],
+      ];
+      mouseXY.current = [e.clientX, e.clientY];
+      const customTransRes = customTrans(transformConfigRef.current, {
+        ...transformConfigRef.current,
+        transXY: [transXY_[0] + deltaXY[0], transXY_[1] + deltaXY[1]],
+      });
+      setTransXY(customTransRes.transXY);
+    },
+    [customTrans]
+  );
+
   const handleGesture = useCallback(
     (e: WheelEvent) => {
       e.preventDefault();
-      console.log("handleGesture", e);
 
       if (e.deltaY === 0) {
+        return;
+      }
+
+      if (mousedownLock.current) {
         return;
       }
 
@@ -115,6 +142,32 @@ export const useFreeScale = ({
       };
     }
   }, [handleGesture]);
+
+  useEffect(() => {
+    const child = childRef.current;
+
+    if (child) {
+      const handleMouseDown = (e: MouseEvent) => {
+        mousedownLock.current = true;
+        mouseXY.current = [e.clientX, e.clientY];
+      };
+
+      const handleMouseUp = () => {
+        mousedownLock.current = false;
+      };
+
+      child.addEventListener("mousedown", handleMouseDown);
+      child.addEventListener("mouseup", handleMouseUp);
+
+      child.addEventListener("mousemove", handleMove);
+
+      return () => {
+        child.removeEventListener("mousedown", handleMouseDown);
+        child.removeEventListener("mouseup", handleMouseUp);
+        child.removeEventListener("mousemove", handleMove);
+      };
+    }
+  }, [handleMove]);
 
   const transform = useMemo(() => {
     return `translateX(${transXY[0]}px) translateY(${transXY[1]}px) rotate(${rotate}deg) scale(${scale})`;
