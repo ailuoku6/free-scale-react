@@ -1,20 +1,22 @@
 import React from "react";
 
 import "./index.css";
-import { useFreeScale } from "./use-free-scale";
+import { useFreeScale, ITransRes } from "./use-free-scale";
 
 interface IProps {
   children?: React.ReactNode;
 }
 
+const customTrans = (prev: ITransRes, v: ITransRes) => {
+  if (v.scale <= 0.3) {
+    return prev;
+  }
+  return v;
+};
+
 export const FreeScaleViewer = (props: IProps) => {
   const { containerRef, childRef, transform } = useFreeScale({
-    customTrans: (prev, v) => {
-      if (v.scale <= 0.3) {
-        return prev;
-      }
-      return v;
-    },
+    customTrans,
   });
 
   return (

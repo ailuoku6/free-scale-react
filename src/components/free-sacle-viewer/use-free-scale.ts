@@ -3,13 +3,13 @@ import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 // 缩放比例
 const defaultScaleStep = 0.1;
 
-interface ITransRes {
+export interface ITransRes {
   transXY: [number, number];
   scale: number;
   rotate: number;
 }
 
-interface IUseFreeScale {
+export interface IUseFreeScale {
   // 自定义缩放比例
   scaleStep?: number;
   // 自定义变换结果，如限制缩放比例，边界检测等
@@ -176,13 +176,13 @@ export const useFreeScale = ({
       child.addEventListener("mousedown", handleMouseDown);
       child.addEventListener("mouseup", handleMouseUp);
       child.addEventListener("mousemove", handleMove);
-      container.addEventListener("mouseup", handleMouseUp);
+      document.addEventListener("mouseup", handleMouseUp);
 
       return () => {
         child.removeEventListener("mousedown", handleMouseDown);
         child.removeEventListener("mouseup", handleMouseUp);
         child.removeEventListener("mousemove", handleMove);
-        container.removeEventListener("mouseup", handleMouseUp);
+        document.removeEventListener("mouseup", handleMouseUp);
       };
     }
   }, [handleMove]);
