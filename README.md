@@ -7,11 +7,15 @@
 First, you need to call `useFreeScale` in your component and pass in a configuration object. This object has two optional properties: `scaleStep` and `customTrans`. `scaleStep` is the scale ratio, and `customTrans` is a function that takes the current transformation result and the new transformation result and returns a new transformation result.
 
 ```jsx
-const { containerRef, childRef, transform, setRotate, setScale, setTransXY } =
-  useFreeScale({
-    scaleStep: 0.1,
-    customTrans: (prev, v) => v,
-  });
+const customTrans = (prev: ITransRes, v: ITransRes) => {
+  if (v.scale <= 0.3) {
+    return prev;
+  }
+  return v;
+};
+const { containerRef, childRef, transform } = useFreeScale({
+  customTrans,
+});
 ```
 
 Then, you need to assign `containerRef` and `childRef` to your container element and child element, respectively. `transform` is a string that represents the current transformation state. You need to assign it to your child element's `style.transform` property.
