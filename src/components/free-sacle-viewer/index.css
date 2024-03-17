@@ -1,0 +1,15 @@
+.container {
+  position: relative;
+  height: 500px;
+  width: 500px;
+
+  border: 1px solid black;
+}
+
+.child {
+  position: absolute;
+  height: 150px;
+  width: 150px;
+  background-color: seagreen;
+  transform-origin: center;
+}
