@@ -1,46 +1,50 @@
-# Getting Started with Create React App
+# useFreeScale
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+`useFreeScale` is a custom React Hook that provides the functionality of free scaling and dragging on HTML elements. It uses touchpad two-finger zoom and mouse dragging for scaling and moving operations.
 
-## Available Scripts
+## Usage
 
-In the project directory, you can run:
+First, you need to call `useFreeScale` in your component and pass in a configuration object. This object has two optional properties: `scaleStep` and `customTrans`. `scaleStep` is the scale ratio, and `customTrans` is a function that takes the current transformation result and the new transformation result and returns a new transformation result.
 
-### `yarn start`
+```jsx
+const { containerRef, childRef, transform, setRotate, setScale, setTransXY } =
+  useFreeScale({
+    scaleStep: 0.1,
+    customTrans: (prev, v) => v,
+  });
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Then, you need to assign `containerRef` and `childRef` to your container element and child element, respectively. `transform` is a string that represents the current transformation state. You need to assign it to your child element's `style.transform` property.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```jsx
+<div ref={containerRef} style={{ width: "100%", height: "100%" }}>
+  <div ref={childRef} style={{ transform }}>
+    Content
+  </div>
+</div>
+```
 
-### `yarn test`
+You can also use `setRotate`, `setScale`, and `setTransXY` to manually set the rotation angle, scale ratio, and displacement.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## API
 
-### `yarn build`
+### `useFreeScale(config: IUseFreeScale)`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+#### Parameters
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- `config`: A configuration object with two optional properties.
+  - `scaleStep`: The scale ratio, the default value is 0.1.
+  - `customTrans`: A custom transformation function. It takes two parameters: the current transformation result and the new transformation result, and returns a new transformation result. The default value is an identity function.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+#### Return Value
 
-### `yarn eject`
+- `containerRef`: A `React.RefObject`, you need to assign it to your container element.
+- `childRef`: A `React.RefObject`, you need to assign it to your child element.
+- `transform`: A string that represents the current transformation state. You need to assign it to your child element's `style.transform` property.
+- `setRotate`: A function that you can use to manually set the rotation angle.
+- `setScale`: A function that you can use to manually set the scale ratio.
+- `setTransXY`: A function that you can use to manually set the displacement.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Notes
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+This Hook can only be used in environments that support `wheel` events and `mousedown`, `mousemove`, `mouseup` events, such as modern web browsers. In addition, you need to ensure that your container element and child element are both block elements, and the size of the container element is large enough to accommodate the enlargement and movement of the child element.
