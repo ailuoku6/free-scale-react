@@ -8,7 +8,14 @@ interface IProps {
 }
 
 export const FreeScaleViewer = (props: IProps) => {
-  const { containerRef, childRef, transform } = useFreeScale({});
+  const { containerRef, childRef, transform } = useFreeScale({
+    customTrans: (prev, v) => {
+      if (v.scale <= 0.3) {
+        return prev;
+      }
+      return v;
+    },
+  });
 
   return (
     <div className="container" ref={containerRef}>
