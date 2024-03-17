@@ -1,7 +1,10 @@
 {
-  "name": "free-scale-react",
+  "name": "use-free-scale",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "main": "dist/free-scale-viewer/use-free-scale.js",
+  "types": "dist/free-scale-viewer/use-free-scale.d.ts",
+  "license": "MIT",
   "devDependencies": {
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
