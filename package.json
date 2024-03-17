@@ -19,6 +19,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
+  "files": [
+    "dist/free-scale-viewer"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/ailuoku6/use-free-scale"
