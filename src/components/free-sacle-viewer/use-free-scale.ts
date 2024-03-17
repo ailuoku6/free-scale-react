@@ -10,13 +10,15 @@ interface ITransRes {
 }
 
 interface IUseFreeScale {
+  // 自定义缩放比例
   scaleStep?: number;
-  customTrans?: (v: ITransRes) => ITransRes;
+  // 自定义变换结果，如限制缩放比例，边界检测等
+  customTrans?: (prev: ITransRes, v: ITransRes) => ITransRes;
 }
 
 export const useFreeScale = ({
   scaleStep = defaultScaleStep,
-  customTrans = (v) => v,
+  customTrans = (prev, v) => v,
 }: IUseFreeScale) => {
   const [transXY, setTransXY] = useState<[number, number]>([0, 0]);
   const [scale, setScale] = useState(1);
@@ -86,7 +88,7 @@ export const useFreeScale = ({
             scaleStep,
         ];
 
-        const customTransRes = customTrans({
+        const customTransRes = customTrans(transformConfigRef.current, {
           transXY: [
             transformConfigRef.current.transXY[0] - deltaOffset[0],
             transformConfigRef.current.transXY[1] - deltaOffset[1],
