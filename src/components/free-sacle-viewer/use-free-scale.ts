@@ -158,7 +158,6 @@ export const useFreeScale = ({
 
       child.addEventListener("mousedown", handleMouseDown);
       child.addEventListener("mouseup", handleMouseUp);
-
       child.addEventListener("mousemove", handleMove);
 
       return () => {
@@ -178,5 +177,7 @@ export const useFreeScale = ({
     childRef,
     transform,
     setRotate,
+    setScale,
+    setTransXY,
   };
 };
