@@ -201,9 +201,13 @@ export const useFreeScale = ({
   }, [rotate, scale, transXY]);
 
   return {
+    transformConfigRef,
     containerRef,
     childRef,
     transform,
+    rotate,
+    scale,
+    transXY,
     setRotate,
     setScale,
     setTransXY,
