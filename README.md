@@ -33,8 +33,11 @@ const { containerRef, childRef, transform } = useFreeScale({
 Then, you need to assign `containerRef` and `childRef` to your container element and child element, respectively. `transform` is a string that represents the current transformation state. You need to assign it to your child element's `style.transform` property.
 
 ```jsx
-<div ref={containerRef} style={{ width: "100%", height: "100%" }}>
-  <div ref={childRef} style={{ transform }}>
+<div
+  ref={containerRef}
+  style={{ width: "100%", height: "100%", position: "relative" }}
+>
+  <div ref={childRef} style={{ transform, position: "absolute" }}>
     Content
   </div>
 </div>
