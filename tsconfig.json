@@ -16,8 +16,7 @@
     "noEmit": false,
     "declaration": true,
     "jsx": "react-jsx",
-    "outDir": "./dist"
+    "outDir": "./dist/hooks"
   },
-  // "include": ["src"],
   "files": ["src/hooks/use-free-scale.ts"]
 }

@@ -2,8 +2,8 @@
   "name": "use-free-scale",
   "version": "0.1.6",
   "private": false,
-  "main": "dist/use-free-scale.js",
-  "types": "dist/use-free-scale.d.ts",
+  "main": "dist/hooks/use-free-scale.js",
+  "types": "dist/hooks/use-free-scale.d.ts",
   "license": "MIT",
   "keywords": [
     "react",
