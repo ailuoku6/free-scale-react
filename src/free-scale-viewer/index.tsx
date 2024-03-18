@@ -46,18 +46,7 @@ export const FreeScaleViewer = (props: IProps) => {
           onClick={() => {
             setRotate(0);
             setScale(1);
-            const container = containerRef.current;
-            const child = childRef.current;
-            if (container && child) {
-              const containerRect = container.getBoundingClientRect();
-              const childRect = child.getBoundingClientRect();
-              setTransXY([
-                containerRect.width / 2 -
-                  childRect.width / transformConfigRef.current.scale / 2,
-                containerRect.height / 2 -
-                  childRect.height / transformConfigRef.current.scale / 2,
-              ]);
-            }
+            setTransXY([0, 0]);
           }}
         >
           reset

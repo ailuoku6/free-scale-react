@@ -1,6 +1,6 @@
 {
   "name": "use-free-scale",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": false,
   "main": "dist/free-scale-viewer/use-free-scale.js",
   "types": "dist/free-scale-viewer/use-free-scale.d.ts",

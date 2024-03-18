@@ -44,20 +44,6 @@ export const useFreeScale = ({
     rotate,
   };
 
-  useEffect(() => {
-    // 初始化，将子元素放在容器中心
-    const container = containerRef.current;
-    const child = childRef.current;
-    if (container && child) {
-      const containerRect = container.getBoundingClientRect();
-      const childRect = child.getBoundingClientRect();
-      setTransXY([
-        containerRect.width / 2 - childRect.width / 2,
-        containerRect.height / 2 - childRect.height / 2,
-      ]);
-    }
-  }, []);
-
   const handleMove = useCallback(
     (e: MouseEvent) => {
       if (!mousedownLock.current) {

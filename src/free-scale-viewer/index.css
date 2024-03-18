@@ -1,6 +1,8 @@
 .container {
   margin: 0 auto;
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 500px;
   width: 500px;
 
@@ -8,7 +10,6 @@
 }
 
 .child {
-  position: absolute;
   height: 150px;
   width: 150px;
   background-color: seagreen;
