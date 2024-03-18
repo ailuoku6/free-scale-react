@@ -1,9 +1,9 @@
 {
   "name": "use-free-scale",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "private": false,
-  "main": "dist/free-scale-viewer/use-free-scale.js",
-  "types": "dist/free-scale-viewer/use-free-scale.d.ts",
+  "main": "dist/use-free-scale.js",
+  "types": "dist/use-free-scale.d.ts",
   "license": "MIT",
   "keywords": [
     "react",

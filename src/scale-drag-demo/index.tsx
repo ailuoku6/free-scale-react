@@ -1,7 +1,7 @@
 import React from "react";
 
 import "./index.css";
-import { useFreeScale, ITransRes } from "./use-free-scale";
+import { useFreeScale, ITransRes } from "../hooks/use-free-scale";
 
 interface IProps {
   children?: React.ReactNode;

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { FreeScaleViewer } from "./free-scale-viewer";
+import { FreeScaleViewer } from "./scale-drag-demo";
 
 function App() {
   return (

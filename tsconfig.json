@@ -18,6 +18,6 @@
     "jsx": "react-jsx",
     "outDir": "./dist"
   },
-  "include": ["src"],
-  "files": ["src/free-scale-viewer/use-free-scale.ts"]
+  // "include": ["src"],
+  "files": ["src/hooks/use-free-scale.ts"]
 }
