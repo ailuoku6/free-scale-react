@@ -9,16 +9,23 @@ export interface ITransRes {
   rotate: number;
 }
 
+export type IDomRect = Pick<DOMRect, "height" | "width"> | undefined;
+
+export interface IRectData {
+  originConatinerRect: IDomRect;
+  originChildRect: IDomRect;
+}
+
 export interface IUseFreeScale {
   // 自定义缩放比例
   scaleStep?: number;
   // 自定义变换结果，如限制缩放比例，边界检测等
-  customTrans?: (prev: ITransRes, v: ITransRes) => ITransRes;
+  customTrans?: (prev: ITransRes, v: ITransRes, rect: IRectData) => ITransRes;
 }
 
 export const useFreeScale = ({
   scaleStep = defaultScaleStep,
-  customTrans = (prev, v) => v,
+  customTrans = (_prev, v) => v,
 }: IUseFreeScale) => {
   const [transXY, setTransXY] = useState<[number, number]>([0, 0]);
   const [scale, setScale] = useState(1);
@@ -29,6 +36,8 @@ export const useFreeScale = ({
 
   const mousedownLock = useRef(false);
   const mouseXY = useRef<[number, number]>([0, 0]);
+  const containerRectRef = useRef<IDomRect>(undefined);
+  const childRectRef = useRef<IDomRect>(undefined);
 
   const requestAnimationRef = useRef<number | null>(null);
 
@@ -44,6 +53,18 @@ export const useFreeScale = ({
     rotate,
   };
 
+  const getOriginRect = useCallback(() => {
+    const originConatinerRect =
+      containerRectRef.current || containerRef.current?.getBoundingClientRect();
+    containerRectRef.current = originConatinerRect;
+
+    const originChildRect =
+      childRectRef.current || childRef.current?.getBoundingClientRect();
+    childRectRef.current = originChildRect;
+
+    return { originConatinerRect, originChildRect };
+  }, []);
+
   const handleMove = useCallback(
     (e: MouseEvent) => {
       if (!mousedownLock.current) {
@@ -56,10 +77,14 @@ export const useFreeScale = ({
         e.clientY - mouseXY.current[1],
       ];
       mouseXY.current = [e.clientX, e.clientY];
-      const customTransRes = customTrans(transformConfigRef.current, {
-        ...transformConfigRef.current,
-        transXY: [transXY_[0] + deltaXY[0], transXY_[1] + deltaXY[1]],
-      });
+      const customTransRes = customTrans(
+        transformConfigRef.current,
+        {
+          ...transformConfigRef.current,
+          transXY: [transXY_[0] + deltaXY[0], transXY_[1] + deltaXY[1]],
+        },
+        getOriginRect()
+      );
       if (requestAnimationRef.current) {
         cancelAnimationFrame(requestAnimationRef.current);
       }
@@ -67,7 +92,7 @@ export const useFreeScale = ({
         setTransXY(customTransRes.transXY);
       });
     },
-    [customTrans]
+    [customTrans, getOriginRect]
   );
 
   const handleGesture = useCallback(
@@ -108,14 +133,18 @@ export const useFreeScale = ({
             scaleStep,
         ];
 
-        const customTransRes = customTrans(transformConfigRef.current, {
-          transXY: [
-            transformConfigRef.current.transXY[0] - deltaOffset[0],
-            transformConfigRef.current.transXY[1] - deltaOffset[1],
-          ],
-          scale: transformConfigRef.current.scale + direc * scaleStep,
-          rotate: transformConfigRef.current.rotate,
-        });
+        const customTransRes = customTrans(
+          transformConfigRef.current,
+          {
+            transXY: [
+              transformConfigRef.current.transXY[0] - deltaOffset[0],
+              transformConfigRef.current.transXY[1] - deltaOffset[1],
+            ],
+            scale: transformConfigRef.current.scale + direc * scaleStep,
+            rotate: transformConfigRef.current.rotate,
+          },
+          getOriginRect()
+        );
 
         if (requestAnimationRef.current) {
           cancelAnimationFrame(requestAnimationRef.current);
@@ -127,7 +156,7 @@ export const useFreeScale = ({
         });
       }
     },
-    [customTrans, scaleStep]
+    [customTrans, getOriginRect, scaleStep]
   );
 
   useEffect(() => {

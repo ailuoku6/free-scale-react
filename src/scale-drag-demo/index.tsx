@@ -1,14 +1,15 @@
 import React from "react";
 
 import "./index.css";
-import { useFreeScale, ITransRes } from "../hooks/use-free-scale";
+import { useFreeScale, ITransRes, IRectData } from "../hooks/use-free-scale";
 
 interface IProps {
   children?: React.ReactNode;
 }
 
-const customTrans = (prev: ITransRes, v: ITransRes) => {
-  if (v.scale <= 0.3) {
+const customTrans = (prev: ITransRes, v: ITransRes, rects: IRectData) => {
+  console.log(rects);
+  if (v.scale <= 0.3 || v.scale >= 3) {
     return prev;
   }
   return v;
