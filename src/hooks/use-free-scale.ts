@@ -16,11 +16,21 @@ export interface IRectData {
   originChildRect: IDomRect;
 }
 
+export enum IAction {
+  MOVE = "move",
+  SCALE = "scale",
+}
+
 export interface IUseFreeScale {
   // 自定义缩放比例
   scaleStep?: number;
   // 自定义变换结果，如限制缩放比例，边界检测等
-  customTrans?: (prev: ITransRes, v: ITransRes, rect: IRectData) => ITransRes;
+  customTrans?: (
+    prev: ITransRes,
+    v: ITransRes,
+    rect: IRectData,
+    action: IAction
+  ) => ITransRes;
 }
 
 export const useFreeScale = ({
@@ -83,7 +93,8 @@ export const useFreeScale = ({
           ...transformConfigRef.current,
           transXY: [transXY_[0] + deltaXY[0], transXY_[1] + deltaXY[1]],
         },
-        getOriginRect()
+        getOriginRect(),
+        IAction.MOVE
       );
       if (requestAnimationRef.current) {
         cancelAnimationFrame(requestAnimationRef.current);
@@ -143,7 +154,8 @@ export const useFreeScale = ({
             scale: transformConfigRef.current.scale + direc * scaleStep,
             rotate: transformConfigRef.current.rotate,
           },
-          getOriginRect()
+          getOriginRect(),
+          IAction.SCALE
         );
 
         if (requestAnimationRef.current) {
