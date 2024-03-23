@@ -39,7 +39,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "demo-build": "rm -r docs&&react-scripts build&&mv build docs",
+    "demo-build": "rm -r docs&&react-scripts build&&mv build docs&&./replace_path.sh",
     "build": "npx tsc",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
