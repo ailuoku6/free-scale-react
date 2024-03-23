@@ -35,6 +35,7 @@
     "type": "git",
     "url": "https://github.com/ailuoku6/use-free-scale"
   },
+  "homepage": "https://ailuoku6.github.io/use-free-scale/",
   "dependencies": {},
   "peerDependencies": {
     "react": "^18.2.0",
