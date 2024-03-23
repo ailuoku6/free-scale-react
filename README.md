@@ -4,7 +4,7 @@
 
 ## Preview
 
-![Preview](https://github.com/ailuoku6/use-free-scale/blob/main/snapshot/preview1.gif)
+![Preview](https://github.com/ailuoku6/use-free-scale/blob/main/snapshot/preview2.gif)
 
 ## Install
 
