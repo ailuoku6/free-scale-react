@@ -17,16 +17,45 @@ npm i use-free-scale
 First, you need to call `useFreeScale` in your component and pass in a configuration object. This object has two optional properties: `scaleStep` and `customTrans`. `scaleStep` is the scale ratio, and `customTrans` is a function that takes the current transformation result and the new transformation result and returns a new transformation result.
 
 ```jsx
-import { useFreeScale, ITransRes } from "use-free-scale";
+import { useFreeScale, ITransRes, IRectData } from "use-free-scale";
 
-const customTrans = (prev: ITransRes, v: ITransRes) => {
-  if (v.scale <= 0.3) {
+const customLimitScaleTrans = (
+  prev: ITransRes,
+  v: ITransRes,
+  rects: IRectData
+) => {
+  if (v.scale <= 0.3 || v.scale >= 3) {
     return prev;
   }
   return v;
 };
+
+const customFreeTrans = (_: ITransRes, v: ITransRes) => v;
+
+const containerLimitTrans = (
+  prev: ITransRes,
+  v: ITransRes,
+  rects: IRectData
+) => {
+  // 限制变换后的子元素不能超出容器
+  const { originConatinerRect, originChildRect } = rects;
+  // 高度加变换距离绝对值，小于容器高度
+  const limitY =
+    Math.abs(v.transXY[1]) + ((originChildRect?.height || 0) * v.scale) / 2 <
+    (originConatinerRect?.height || 0) / 2;
+  // 宽度加变换距离绝对值，小于容器宽度
+  const limitX =
+    Math.abs(v.transXY[0]) + ((originChildRect?.width || 0) * v.scale) / 2 <
+    (originConatinerRect?.width || 0) / 2;
+
+  if (!limitX || !limitY) {
+    return prev;
+  }
+  return v;
+};
+
 const { containerRef, childRef, transform } = useFreeScale({
-  customTrans,
+  customTrans: customLimitScaleTrans,
 });
 ```
 
