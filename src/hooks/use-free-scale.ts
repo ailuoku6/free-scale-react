@@ -76,17 +76,13 @@ export const useFreeScale = ({
   }, []);
 
   const handleMove = useCallback(
-    (e: MouseEvent) => {
-      if (!mousedownLock.current) {
-        return;
-      }
-      e.preventDefault();
+    ({ point }: { point: [number, number] }) => {
       const transXY_ = transformConfigRef.current.transXY;
       const deltaXY = [
-        e.clientX - mouseXY.current[0],
-        e.clientY - mouseXY.current[1],
+        point[0] - mouseXY.current[0],
+        point[1] - mouseXY.current[1],
       ];
-      mouseXY.current = [e.clientX, e.clientY];
+      mouseXY.current = [point[0], point[1]];
       const customTransRes = customTrans(
         transformConfigRef.current,
         {
@@ -100,6 +96,17 @@ export const useFreeScale = ({
       setTransXY(customTransRes.transXY);
     },
     [customTrans, getOriginRect]
+  );
+
+  const handleMoveEvent = useCallback(
+    (e: MouseEvent) => {
+      if (!mousedownLock.current) {
+        return;
+      }
+      e.preventDefault();
+      handleMove({ point: [e.clientX, e.clientY] });
+    },
+    [handleMove]
   );
 
   const handleScale = useCallback(
@@ -205,16 +212,16 @@ export const useFreeScale = ({
       };
 
       container.addEventListener("mousedown", handleMouseDown);
-      document.addEventListener("mousemove", handleMove);
+      document.addEventListener("mousemove", handleMoveEvent);
       document.addEventListener("mouseup", handleMouseUp);
 
       return () => {
         container.removeEventListener("mousedown", handleMouseDown);
-        document.removeEventListener("mousemove", handleMove);
+        document.removeEventListener("mousemove", handleMoveEvent);
         document.removeEventListener("mouseup", handleMouseUp);
       };
     }
-  }, [handleMove]);
+  }, [handleMoveEvent]);
 
   // 移动端触摸事件
   useEffect(() => {
@@ -242,23 +249,7 @@ export const useFreeScale = ({
         if (e.touches.length === 1 && mousedownLock.current) {
           e.preventDefault();
           const touch = e.touches[0];
-          const transXY_ = transformConfigRef.current.transXY;
-          const deltaXY = [
-            touch.clientX - mouseXY.current[0],
-            touch.clientY - mouseXY.current[1],
-          ];
-          mouseXY.current = [touch.clientX, touch.clientY];
-          const customTransRes = customTrans(
-            transformConfigRef.current,
-            {
-              ...transformConfigRef.current,
-              transXY: [transXY_[0] + deltaXY[0], transXY_[1] + deltaXY[1]],
-            },
-            getOriginRect(),
-            IAction.MOVE
-          );
-
-          setTransXY(customTransRes.transXY);
+          handleMove({ point: [touch.clientX, touch.clientY] });
         } else if (e.touches.length === 2) {
           // 缩放
           e.preventDefault();
