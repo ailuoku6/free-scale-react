@@ -294,11 +294,13 @@ export const useFreeScale = ({
       container.addEventListener("touchstart", handleTouchStart);
       document.addEventListener("touchmove", handleTouchMove);
       document.addEventListener("touchend", handleTouchEnd);
+      document.addEventListener("touchcancel", handleTouchEnd);
 
       return () => {
         container.removeEventListener("touchstart", handleTouchStart);
         document.removeEventListener("touchmove", handleTouchMove);
         document.removeEventListener("touchend", handleTouchEnd);
+        document.removeEventListener("touchcancel", handleTouchEnd);
       };
     }
   }, [handleMove, handleScale]);
