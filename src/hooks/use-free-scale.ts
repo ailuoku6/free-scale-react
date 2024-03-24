@@ -253,11 +253,12 @@ export const useFreeScale = ({
         } else if (e.touches.length === 2) {
           // 缩放
           e.preventDefault();
-          const [p1, p2] = [
+          const [p1, p2]: Array<[number, number]> = [
             [e.touches[0].clientX, e.touches[0].clientY],
             [e.touches[1].clientX, e.touches[1].clientY],
           ];
           const [preP1, preP2] = touchPointsRef.current;
+          touchPointsRef.current = [p1, p2];
           const preDistance = Math.sqrt(
             (preP1[0] - preP2[0]) ** 2 + (preP1[1] - preP2[1]) ** 2
           );
