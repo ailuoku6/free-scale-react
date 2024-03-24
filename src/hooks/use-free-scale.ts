@@ -295,7 +295,7 @@ export const useFreeScale = ({
         document.removeEventListener("touchend", handleTouchEnd);
       };
     }
-  }, [customTrans, getOriginRect, handleScale]);
+  }, [handleMove, handleScale]);
 
   const transform = useMemo(() => {
     return `translateX(${transXY[0]}px) translateY(${transXY[1]}px) rotate(${rotate}deg) scale(${scale})`;
