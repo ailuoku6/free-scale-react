@@ -49,6 +49,8 @@ export const useFreeScale = ({
   const containerRectRef = useRef<IDomRect>(undefined);
   const childRectRef = useRef<IDomRect>(undefined);
 
+  const touchPointsRef = useRef<Array<[number, number]>>([]);
+
   const transformConfigRef = useRef<ITransRes>({
     transXY,
     scale,
@@ -74,17 +76,13 @@ export const useFreeScale = ({
   }, []);
 
   const handleMove = useCallback(
-    (e: MouseEvent) => {
-      if (!mousedownLock.current) {
-        return;
-      }
-      e.preventDefault();
+    ({ point }: { point: [number, number] }) => {
       const transXY_ = transformConfigRef.current.transXY;
       const deltaXY = [
-        e.clientX - mouseXY.current[0],
-        e.clientY - mouseXY.current[1],
+        point[0] - mouseXY.current[0],
+        point[1] - mouseXY.current[1],
       ];
-      mouseXY.current = [e.clientX, e.clientY];
+      mouseXY.current = [point[0], point[1]];
       const customTransRes = customTrans(
         transformConfigRef.current,
         {
@@ -96,6 +94,71 @@ export const useFreeScale = ({
       );
 
       setTransXY(customTransRes.transXY);
+    },
+    [customTrans, getOriginRect]
+  );
+
+  const handleMoveEvent = useCallback(
+    (e: MouseEvent) => {
+      if (!mousedownLock.current) {
+        return;
+      }
+      e.preventDefault();
+      handleMove({ point: [e.clientX, e.clientY] });
+    },
+    [handleMove]
+  );
+
+  const handleScale = useCallback(
+    ({
+      direc,
+      scaleDelta,
+      targetPoint,
+    }: {
+      direc: -1 | 1;
+      scaleDelta: number;
+      // 焦点
+      targetPoint: [number, number];
+    }) => {
+      // 缩放中心点，缩放方向
+      // 先假定缩放中心点为容器中心
+      const container = containerRef.current;
+      const child = childRef.current;
+      if (container && child) {
+        // const containerRect = container.getBoundingClientRect();
+        const childRect = child.getBoundingClientRect();
+        const childCenter = [
+          childRect.left + childRect.width / 2,
+          childRect.top + childRect.height / 2,
+        ];
+
+        const deltaOffset = [
+          (((targetPoint[0] - childCenter[0]) * direc) /
+            transformConfigRef.current.scale) *
+            scaleDelta,
+          (((targetPoint[1] - childCenter[1]) * direc) /
+            transformConfigRef.current.scale) *
+            scaleDelta,
+        ];
+
+        const customTransRes = customTrans(
+          transformConfigRef.current,
+          {
+            transXY: [
+              transformConfigRef.current.transXY[0] - deltaOffset[0],
+              transformConfigRef.current.transXY[1] - deltaOffset[1],
+            ],
+            scale: transformConfigRef.current.scale + direc * scaleDelta,
+            rotate: transformConfigRef.current.rotate,
+          },
+          getOriginRect(),
+          IAction.SCALE
+        );
+
+        setScale(customTransRes.scale);
+        setTransXY(customTransRes.transXY);
+        setRotate(customTransRes.rotate);
+      }
     },
     [customTrans, getOriginRect]
   );
@@ -114,50 +177,13 @@ export const useFreeScale = ({
 
       const direc = e.deltaY > 0 ? -1 : 1;
 
-      // 缩放中心点，缩放方向
-      // 先假定缩放中心点为容器中心
-      const container = containerRef.current;
-      const child = childRef.current;
-      if (container && child) {
-        // const containerRect = container.getBoundingClientRect();
-        const childRect = child.getBoundingClientRect();
-        const childCenter = [
-          childRect.left + childRect.width / 2,
-          childRect.top + childRect.height / 2,
-        ];
-
-        // 焦点
-        const targetPoint = [e.clientX, e.clientY];
-
-        const deltaOffset = [
-          (((targetPoint[0] - childCenter[0]) * direc) /
-            transformConfigRef.current.scale) *
-            scaleStep,
-          (((targetPoint[1] - childCenter[1]) * direc) /
-            transformConfigRef.current.scale) *
-            scaleStep,
-        ];
-
-        const customTransRes = customTrans(
-          transformConfigRef.current,
-          {
-            transXY: [
-              transformConfigRef.current.transXY[0] - deltaOffset[0],
-              transformConfigRef.current.transXY[1] - deltaOffset[1],
-            ],
-            scale: transformConfigRef.current.scale + direc * scaleStep,
-            rotate: transformConfigRef.current.rotate,
-          },
-          getOriginRect(),
-          IAction.SCALE
-        );
-
-        setScale(customTransRes.scale);
-        setTransXY(customTransRes.transXY);
-        setRotate(customTransRes.rotate);
-      }
+      handleScale({
+        direc,
+        scaleDelta: scaleStep,
+        targetPoint: [e.clientX, e.clientY],
+      });
     },
-    [customTrans, getOriginRect, scaleStep]
+    [handleScale, scaleStep]
   );
 
   useEffect(() => {
@@ -185,17 +211,99 @@ export const useFreeScale = ({
         mousedownLock.current = false;
       };
 
-      child.addEventListener("mousedown", handleMouseDown);
-      document.addEventListener("mousemove", handleMove);
+      container.addEventListener("mousedown", handleMouseDown);
+      document.addEventListener("mousemove", handleMoveEvent);
       document.addEventListener("mouseup", handleMouseUp);
 
       return () => {
-        child.removeEventListener("mousedown", handleMouseDown);
-        document.removeEventListener("mousemove", handleMove);
+        container.removeEventListener("mousedown", handleMouseDown);
+        document.removeEventListener("mousemove", handleMoveEvent);
         document.removeEventListener("mouseup", handleMouseUp);
       };
     }
-  }, [handleMove]);
+  }, [handleMoveEvent]);
+
+  // 移动端触摸事件
+  useEffect(() => {
+    // 在container内可响应放大缩小
+    // 在child内可响应移动
+    const container = containerRef.current;
+    const child = childRef.current;
+    if (container && child) {
+      const handleTouchStart = (e: TouchEvent) => {
+        if (e.touches.length === 1) {
+          e.preventDefault();
+          mousedownLock.current = true;
+          mouseXY.current = [e.touches[0].clientX, e.touches[0].clientY];
+        } else if (e.touches.length === 2) {
+          // 缩放，记录两个触摸点
+          e.preventDefault();
+          mousedownLock.current = true;
+          touchPointsRef.current = [
+            [e.touches[0].clientX, e.touches[0].clientY],
+            [e.touches[1].clientX, e.touches[1].clientY],
+          ];
+        }
+      };
+
+      const handleTouchMove = (e: TouchEvent) => {
+        if (e.touches.length === 1 && mousedownLock.current) {
+          e.preventDefault();
+          const touch = e.touches[0];
+          handleMove({ point: [touch.clientX, touch.clientY] });
+        } else if (
+          e.touches.length === 2 &&
+          touchPointsRef.current.length === 2 &&
+          mousedownLock.current
+        ) {
+          // 缩放
+          e.preventDefault();
+          const [p1, p2]: Array<[number, number]> = [
+            [e.touches[0].clientX, e.touches[0].clientY],
+            [e.touches[1].clientX, e.touches[1].clientY],
+          ];
+          const [preP1, preP2] = touchPointsRef.current;
+          touchPointsRef.current = [p1, p2];
+          const preDistance = Math.sqrt(
+            (preP1[0] - preP2[0]) ** 2 + (preP1[1] - preP2[1]) ** 2
+          );
+          const distance = Math.sqrt(
+            (p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2
+          );
+
+          const direc = distance > preDistance ? 1 : -1;
+
+          // 焦点
+          const targetPoint: [number, number] = [
+            (p1[0] + p2[0]) / 2,
+            (p1[1] + p2[1]) / 2,
+          ];
+
+          handleScale({
+            direc,
+            scaleDelta: Math.abs(((distance - preDistance) * 5) / preDistance),
+            targetPoint,
+          });
+        }
+      };
+
+      const handleTouchEnd = () => {
+        mousedownLock.current = false;
+      };
+
+      container.addEventListener("touchstart", handleTouchStart);
+      document.addEventListener("touchmove", handleTouchMove);
+      document.addEventListener("touchend", handleTouchEnd);
+      document.addEventListener("touchcancel", handleTouchEnd);
+
+      return () => {
+        container.removeEventListener("touchstart", handleTouchStart);
+        document.removeEventListener("touchmove", handleTouchMove);
+        document.removeEventListener("touchend", handleTouchEnd);
+        document.removeEventListener("touchcancel", handleTouchEnd);
+      };
+    }
+  }, [handleMove, handleScale]);
 
   const transform = useMemo(() => {
     return `translateX(${transXY[0]}px) translateY(${transXY[1]}px) rotate(${rotate}deg) scale(${scale})`;
