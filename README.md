@@ -92,4 +92,4 @@ You can also use `setRotate`, `setScale`, and `setTransXY` to manually set the r
 
 ## Notes
 
-This Hook can only be used in environments that support `wheel` events and `mousedown`, `mousemove`, `mouseup` events, such as modern web browsers. In addition, you need to ensure that your container element and child element are both block elements, and the size of the container element is large enough to accommodate the enlargement and movement of the child element.
+This Hook can be used in environments that support `wheel` events, `mousedown`, `mousemove`, `mouseup` events, as well as mobile touch events, such as modern web browsers. In addition, you need to ensure that your container element and child element are both block elements, and the size of the container element is large enough to accommodate the enlargement and movement of the child element.
