@@ -59,7 +59,7 @@ const { containerRef, childRef, transform } = useFreeScale({
 });
 ```
 
-然后，你需要将 `containerRef` 和 `childRef` 分别赋给你的容器元素和子元素。`transform` 是一个表示当前变换状态的字符串，你需要将它赋给你的子元素的 `style.transform` 属性。
+在这之后，你需要将 `containerRef` 和 `childRef` 分别赋给你的容器元素和子元素。`transform` 是一个表示当前变换状态的字符串，你需要将它赋给你的子元素的 `style.transform` 属性。
 
 ```jsx
 <div ref={containerRef} style={{ width: "100%", height: "100%" }}>
@@ -77,18 +77,18 @@ const { containerRef, childRef, transform } = useFreeScale({
 
 #### 参数
 
-- `config`: 一个带有两个可选属性的配置对象。
+- `config`: 有两个可选的配置属性对象。
   - `scaleStep`: 缩放比例，默认值是 0.1。
   - `customTrans`: 自定义变换函数。它接收两个参数：当前的变换结果和新的变换结果，并返回一个新的变换结果。默认值是恒等函数。
 
 #### 返回值
 
-- `containerRef`: 一个 `React.RefObject`，你需要将它赋给你的容器元素。
-- `childRef`: 一个 `React.RefObject`，你需要将它赋给你的子元素。
-- `transform`: 一个表示当前变换状态的字符串，你需要将它赋给你的子元素的 `style.transform` 属性。
-- `setRotate`: 一个函数，你可以用它来手动设置旋转角度。
-- `setScale`: 一个函数，你可以用它来手动设置缩放比例。
-- `setTransXY`: 一个函数，你可以用它来手动设置位移。
+- `containerRef`: `React.RefObject`，你需要将它赋给你的容器元素。
+- `childRef`: `React.RefObject`，你需要将它赋给你的子元素。
+- `transform`: 表示当前变换状态的字符串，你需要将它赋给你的子元素的 `style.transform` 属性。
+- `setRotate`: 你可以用它来手动设置旋转角度。
+- `setScale`: 你可以用它来手动设置缩放比例。
+- `setTransXY`: 你可以用它来手动设置位移。
 
 ## 注意事项
 
