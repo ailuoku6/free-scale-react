@@ -276,7 +276,7 @@ export const useFreeScale = ({
 
           handleScale({
             direc,
-            scaleDelta: Math.abs((distance - preDistance) / preDistance),
+            scaleDelta: Math.abs(((distance - preDistance) * 5) / preDistance),
             targetPoint,
           });
         }
