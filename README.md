@@ -1,6 +1,6 @@
 # useFreeScale
 
-`useFreeScale` is a custom React Hook that provides the functionality of free scaling and dragging on HTML elements. It uses touchpad two-finger zoom and mouse dragging for scaling and moving operations.
+`useFreeScale` is a lightweight and high-performance custom React Hook that provides the functionality of free scaling and dragging (compatible with mobile touch events) on HTML elements. It uses touchpad two-finger zoom and mouse dragging for scaling and moving operations.
 
 ## Preview
 
