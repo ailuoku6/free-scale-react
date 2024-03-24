@@ -49,8 +49,6 @@ export const useFreeScale = ({
   const containerRectRef = useRef<IDomRect>(undefined);
   const childRectRef = useRef<IDomRect>(undefined);
 
-  const requestAnimationRef = useRef<number | null>(null);
-
   const transformConfigRef = useRef<ITransRes>({
     transXY,
     scale,
@@ -96,12 +94,8 @@ export const useFreeScale = ({
         getOriginRect(),
         IAction.MOVE
       );
-      if (requestAnimationRef.current) {
-        cancelAnimationFrame(requestAnimationRef.current);
-      }
-      requestAnimationRef.current = requestAnimationFrame(() => {
-        setTransXY(customTransRes.transXY);
-      });
+
+      setTransXY(customTransRes.transXY);
     },
     [customTrans, getOriginRect]
   );
@@ -158,14 +152,9 @@ export const useFreeScale = ({
           IAction.SCALE
         );
 
-        if (requestAnimationRef.current) {
-          cancelAnimationFrame(requestAnimationRef.current);
-        }
-        requestAnimationRef.current = requestAnimationFrame(() => {
-          setScale(customTransRes.scale);
-          setTransXY(customTransRes.transXY);
-          setRotate(customTransRes.rotate);
-        });
+        setScale(customTransRes.scale);
+        setTransXY(customTransRes.transXY);
+        setRotate(customTransRes.rotate);
       }
     },
     [customTrans, getOriginRect, scaleStep]
@@ -194,34 +183,19 @@ export const useFreeScale = ({
 
       const handleMouseUp = () => {
         mousedownLock.current = false;
-        if (requestAnimationRef.current) {
-          cancelAnimationFrame(requestAnimationRef.current);
-          requestAnimationRef.current = null;
-        }
       };
 
       child.addEventListener("mousedown", handleMouseDown);
-      child.addEventListener("mouseup", handleMouseUp);
-      child.addEventListener("mousemove", handleMove);
+      document.addEventListener("mousemove", handleMove);
       document.addEventListener("mouseup", handleMouseUp);
 
       return () => {
         child.removeEventListener("mousedown", handleMouseDown);
-        child.removeEventListener("mouseup", handleMouseUp);
-        child.removeEventListener("mousemove", handleMove);
+        document.removeEventListener("mousemove", handleMove);
         document.removeEventListener("mouseup", handleMouseUp);
       };
     }
   }, [handleMove]);
-
-  useEffect(() => {
-    return () => {
-      const requestFrameId = requestAnimationRef.current;
-      if (requestFrameId) {
-        cancelAnimationFrame(requestFrameId);
-      }
-    };
-  }, []);
 
   const transform = useMemo(() => {
     return `translateX(${transXY[0]}px) translateY(${transXY[1]}px) rotate(${rotate}deg) scale(${scale})`;
