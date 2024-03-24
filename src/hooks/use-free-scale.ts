@@ -175,49 +175,6 @@ export const useFreeScale = ({
         scaleDelta: scaleStep,
         targetPoint: [e.clientX, e.clientY],
       });
-
-      // 缩放中心点，缩放方向
-      // 先假定缩放中心点为容器中心
-      // const container = containerRef.current;
-      // const child = childRef.current;
-      // if (container && child) {
-      //   // const containerRect = container.getBoundingClientRect();
-      //   const childRect = child.getBoundingClientRect();
-      //   const childCenter = [
-      //     childRect.left + childRect.width / 2,
-      //     childRect.top + childRect.height / 2,
-      //   ];
-
-      //   // 焦点
-      //   const targetPoint = [e.clientX, e.clientY];
-
-      //   const deltaOffset = [
-      //     (((targetPoint[0] - childCenter[0]) * direc) /
-      //       transformConfigRef.current.scale) *
-      //       scaleStep,
-      //     (((targetPoint[1] - childCenter[1]) * direc) /
-      //       transformConfigRef.current.scale) *
-      //       scaleStep,
-      //   ];
-
-      //   const customTransRes = customTrans(
-      //     transformConfigRef.current,
-      //     {
-      //       transXY: [
-      //         transformConfigRef.current.transXY[0] - deltaOffset[0],
-      //         transformConfigRef.current.transXY[1] - deltaOffset[1],
-      //       ],
-      //       scale: transformConfigRef.current.scale + direc * scaleStep,
-      //       rotate: transformConfigRef.current.rotate,
-      //     },
-      //     getOriginRect(),
-      //     IAction.SCALE
-      //   );
-
-      //   setScale(customTransRes.scale);
-      //   setTransXY(customTransRes.transXY);
-      //   setRotate(customTransRes.rotate);
-      // }
     },
     [handleScale, scaleStep]
   );
@@ -347,7 +304,7 @@ export const useFreeScale = ({
         document.removeEventListener("touchend", handleTouchEnd);
       };
     }
-  }, [customTrans, getOriginRect]);
+  }, [customTrans, getOriginRect, handleScale]);
 
   const transform = useMemo(() => {
     return `translateX(${transXY[0]}px) translateY(${transXY[1]}px) rotate(${rotate}deg) scale(${scale})`;
