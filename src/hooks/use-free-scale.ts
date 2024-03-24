@@ -238,6 +238,7 @@ export const useFreeScale = ({
         } else if (e.touches.length === 2) {
           // 缩放，记录两个触摸点
           e.preventDefault();
+          mousedownLock.current = true;
           touchPointsRef.current = [
             [e.touches[0].clientX, e.touches[0].clientY],
             [e.touches[1].clientX, e.touches[1].clientY],
@@ -250,7 +251,11 @@ export const useFreeScale = ({
           e.preventDefault();
           const touch = e.touches[0];
           handleMove({ point: [touch.clientX, touch.clientY] });
-        } else if (e.touches.length === 2) {
+        } else if (
+          e.touches.length === 2 &&
+          touchPointsRef.current.length === 2 &&
+          mousedownLock.current
+        ) {
           // 缩放
           e.preventDefault();
           const [p1, p2]: Array<[number, number]> = [
